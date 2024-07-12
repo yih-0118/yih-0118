@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>輸入單字資料並導出CSV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>輸入單字資料並導出CSV</h1>
+        <div class="form-group">
+            <label for="word">單字</label>
+            <input type="text" id="word" required>
+        </div>
+        <div class="form-group">
+            <label for="partOfSpeech">詞性</label>
+            <input type="text" id="partOfSpeech">
+        </div>
+        <div class="form-group">
+            <label for="chinese">中文</label>
+            <input type="text" id="chinese" required>
+        </div>
+        <div class="button-group">
+            <button onclick="addEntry()">新增</button>
+            <button onclick="downloadCSV()">下載CSV</button>
+        </div>
+        <table id="entriesTable">
+            <thead>
+                <tr>
+                    <th>單字</th>
+                    <th>詞性</th>
+                    <th>中文</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 動態新增的條目將顯示在這裡 -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let entries = [];
+
+        function addEntry() {
+            const word = document.getElementById('word').value;
+            const partOfSpeech = document.getElementById('partOfSpeech').value;
+            const chinese = document.getElementById('chinese').value;
+
+            if (word && chinese) {
+                entries.push({ word, partOfSpeech, chinese });
+                document.getElementById('word').value = '';
+                document.getElementById('partOfSpeech').value = '';
+                document.getElementById('chinese').value = '';
+                updateTable();
+            } else {
+                alert('請填寫單字和中文欄位');
+            }
+        }
+
+        function updateTable() {
+            const tableBody = document.getElementById('entriesTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            entries.forEach(entry => {
+                const row = tableBody.insertRow();
+                const cellWord = row.insertCell(0);
+                const cellPartOfSpeech = row.insertCell(1);
+                const cellChinese = row.insertCell(2);
+                cellWord.textContent = entry.word;
+                cellPartOfSpeech.textContent = entry.partOfSpeech;
+                cellChinese.textContent = entry.chinese;
+            });
+        }
+
+        function downloadCSV() {
+            if (entries.length === 0) {
+                alert('沒有資料可供下載');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "單字,詞性,中文\n";
+
+            entries.forEach(entry => {
+                const row = `${entry.word},${entry.partOfSpeech},${entry.chinese}`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "words.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+    </script>
+</body>
+</html>

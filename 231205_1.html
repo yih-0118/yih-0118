@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Weather Web</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #weatherData {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .location {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        p {
+            margin: 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>天氣報告</h1>
+    <div id="weatherData"></div>
+
+    <script>
+        const apiUrl = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0001-001?Authorization=CWB-AFCD05A4-A82B-452D-A0C0-3434C0A7B30D&format=JSON&StationName=%E6%96%B0%E8%8E%8A&WeatherElement=AirTemperature';
+
+        const updateInterval = 30000000;
+
+        function fetchData() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const weatherData = processData(data.records.Station);
+
+                    updateUI(weatherData);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        function processData(records) {
+            const firstRecord = records[0];
+            
+            const locationName = firstRecord.StationName;
+            const latestTemperature = firstRecord.WeatherElement.AirTemperature;
+          
+            return [{
+              locationName,
+              latestTemperature 
+            }];
+        }
+
+        function updateUI(weatherData) {
+            const weatherContainer = document.getElementById('weatherData');
+            weatherContainer.innerHTML = '';
+
+            const data = weatherData[0];
+
+            const locationDiv = document.createElement('div');
+            locationDiv.innerHTML = `<p>${data.locationName}: ${data.latestTemperature}°C</p>`;
+            weatherContainer.appendChild(locationDiv);
+        }
+
+        fetchData();
+
+        setInterval(fetchData, updateInterval);
+    </script>
+</body>
+
+</html>
