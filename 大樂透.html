@@ -2,6 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大樂透</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
@@ -13,10 +14,10 @@
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-4 text-center">大樂透</h1>
+    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-xl sm:text-2xl font-bold mb-4 text-center">大樂透</h1>
         
-        <div class="mb-4">
+        <div class="mb-4 text-sm sm:text-base">
             <p>餘額: <span id="moneyDisplay">0</span> 元</p>
             <p>已選號碼: <span id="selectedNumbersDisplay"></span></p>
         </div>
@@ -25,26 +26,24 @@
             <!-- 號碼按鈕將動態生成 -->
         </div>
 
-        <div class="flex space-x-4">
-            <button id="playButton" class="flex-grow bg-green-500 text-white py-2 rounded hover:bg-green-600">
+        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+            <button id="playButton" class="flex-grow bg-green-500 text-white py-3 rounded hover:bg-green-600 text-sm sm:text-base">
                 購買彩票 (50元)
             </button>
-            <button id="moneyButton" class="flex-grow bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+            <button id="moneyButton" class="flex-grow bg-blue-500 text-white py-3 rounded hover:bg-blue-600 text-sm sm:text-base">
                 隨機搶劫
             </button>
         </div>
 
-        <div id="resultDisplay" class="mt-4 text-center"></div>
+        <div id="resultDisplay" class="mt-4 text-center text-sm sm:text-base"></div>
     </div>
 
     <script>
-        
         let money = 0;
         let selectedNumbers = [];
         const winningNumbers = [];
         let specialNumber = null;
 
-        
         const moneyDisplay = document.getElementById('moneyDisplay');
         const selectedNumbersDisplay = document.getElementById('selectedNumbersDisplay');
         const numberGrid = document.getElementById('numberGrid');
@@ -52,35 +51,28 @@
         const moneyButton = document.getElementById('moneyButton');
         const resultDisplay = document.getElementById('resultDisplay');
 
-        
         function initializeNumberGrid() {
             for (let i = 1; i <= 49; i++) {
                 const button = document.createElement('button');
                 button.textContent = i.toString().padStart(2, '0');
-                button.classList.add('number-button', 'bg-gray-200', 'p-2', 'rounded', 'hover:bg-blue-300');
+                button.classList.add('number-button', 'bg-gray-200', 'p-2', 'rounded', 'hover:bg-blue-300', 'text-sm', 'sm:text-base');
                 button.addEventListener('click', () => toggleNumber(i, button));
                 numberGrid.appendChild(button);
             }
         }
 
-        
         function toggleNumber(number, button) {
             const index = selectedNumbers.indexOf(number);
-            
             if (index > -1) {
-                
                 selectedNumbers.splice(index, 1);
                 button.classList.remove('selected');
             } else if (selectedNumbers.length < 6) {
-                
                 selectedNumbers.push(number);
                 button.classList.add('selected');
             }
-            
             updateSelectedNumbersDisplay();
         }
 
-        
         function updateSelectedNumbersDisplay() {
             selectedNumbersDisplay.textContent = selectedNumbers
                 .sort((a, b) => a - b)
@@ -88,7 +80,6 @@
                 .join(', ');
         }
 
-        
         function generateWinningNumbers() {
             winningNumbers.length = 0;
             while (winningNumbers.length < 6) {
@@ -98,30 +89,23 @@
                 }
             }
             winningNumbers.sort((a, b) => a - b);
-
-            
             specialNumber = Math.floor(Math.random() * 49) + 1;
         }
 
-        
         function calculatePrize() {
-            
             const matchedNumbers = selectedNumbers.filter(num => winningNumbers.includes(num));
             const matchCount = matchedNumbers.length;
-
-            
-            if (matchCount === 6) return 100000000;  
-            if (matchCount === 5 && selectedNumbers.includes(specialNumber)) return 10000000;  
-            if (matchCount === 5) return 1000000;   
-            if (matchCount === 4 && selectedNumbers.includes(specialNumber)) return 50000;     
-            if (matchCount === 4) return 2000;      
-            if (matchCount === 3 && selectedNumbers.includes(specialNumber)) return 1000;      
-            if (matchCount === 2 && selectedNumbers.includes(specialNumber)) return 400;       
-            if (matchCount === 3) return 400;       
+            if (matchCount === 6) return 100000000;
+            if (matchCount === 5 && selectedNumbers.includes(specialNumber)) return 10000000;
+            if (matchCount === 5) return 1000000;
+            if (matchCount === 4 && selectedNumbers.includes(specialNumber)) return 50000;
+            if (matchCount === 4) return 2000;
+            if (matchCount === 3 && selectedNumbers.includes(specialNumber)) return 1000;
+            if (matchCount === 2 && selectedNumbers.includes(specialNumber)) return 400;
+            if (matchCount === 3) return 400;
             return 0;
         }
 
-        
         function playLottery() {
             if (selectedNumbers.length !== 6) {
                 alert('請選擇6個號碼');
@@ -131,7 +115,6 @@
                 alert('餘額不足');
                 return;
             }
-
             money -= 50;
             generateWinningNumbers();
             const prize = calculatePrize();
@@ -147,28 +130,21 @@
             updateMoneyDisplay();
         }
 
-        
         function earnMoney() {
             let randomMoney = Math.floor(Math.random() * 100) + 1;
             money += randomMoney;
             updateMoneyDisplay();
         }
-        
 
-        
         function updateMoneyDisplay() {
             moneyDisplay.textContent = money;
         }
 
-        
         playButton.addEventListener('click', playLottery);
         moneyButton.addEventListener('click', earnMoney);
 
-        
         initializeNumberGrid();
         updateMoneyDisplay();
     </script>
-    <!-- <script src="share.js"></script> -->
-
 </body>
 </html>
