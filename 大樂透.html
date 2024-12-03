@@ -39,6 +39,18 @@
         </div>
 
         <div id="resultDisplay" class="mt-4 text-center text-sm sm:text-base"></div>
+
+        <div id="logs" class="mt-4">
+            <h2 class="text-lg font-bold">紀錄</h2>
+            <div>
+                <h3 class="text-md font-semibold">賺錢紀錄</h3>
+                <ul id="earnLogs" class="list-disc list-inside text-sm"></ul>
+            </div>
+            <div>
+                <h3 class="text-md font-semibold">中獎紀錄</h3>
+                <ul id="prizeLogs" class="list-disc list-inside text-sm"></ul>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -54,6 +66,8 @@
         const moneyButton = document.getElementById('moneyButton');
         const makeButton = document.getElementById('makeButton');
         const resultDisplay = document.getElementById('resultDisplay');
+        const earnLogs = document.getElementById('earnLogs');
+        const prizeLogs = document.getElementById('prizeLogs');
 
         function initializeNumberGrid() {
             for (let i = 1; i <= 49; i++) {
@@ -110,6 +124,18 @@
             return 0;
         }
 
+        function logEarnMoney(message) {
+            const logItem = document.createElement('li');
+            logItem.textContent = message;
+            earnLogs.appendChild(logItem);
+        }
+
+        function logPrize(message) {
+            const logItem = document.createElement('li');
+            logItem.textContent = message;
+            prizeLogs.appendChild(logItem);
+        }
+
         function playLottery() {
             if (selectedNumbers.length !== 6) {
                 alert('請選擇6個號碼');
@@ -131,6 +157,12 @@
                 <p>獎金: ${prize} 元</p>
             `;
 
+            if (prize > 0) {
+                logPrize(`中獎！號碼: ${selectedNumbers.map(num => num.toString().padStart(2, '0')).join(', ')}, 獎金: ${prize} 元。`);
+            } else {
+                logPrize(`未中獎，號碼: ${selectedNumbers.map(num => num.toString().padStart(2, '0')).join(', ')}`);
+            }
+
             updateMoneyDisplay();
         }
 
@@ -138,10 +170,12 @@
             const isCaught = Math.random() < 0.3;
             if (isCaught) {
                 alert('你被警察抓到了！全額被沒收！');
+                logEarnMoney('被警察抓到了，損失所有餘額。');
                 money = 0;
             } else {
                 const randomMoney = Math.floor(Math.random() * 1000) + 1;
                 alert(`成功搶劫！獲得 ${randomMoney} 元！`);
+                logEarnMoney(`成功搶劫獲得 ${randomMoney} 元。`);
                 money += randomMoney;
             }
             updateMoneyDisplay();
@@ -149,6 +183,7 @@
 
         function makeMoney() {
             money += 1;
+            logEarnMoney('打工獲得 1 元。');
             updateMoneyDisplay();
         }
 
@@ -159,7 +194,6 @@
         playButton.addEventListener('click', playLottery);
         moneyButton.addEventListener('click', earnMoney);
         makeButton.addEventListener('click', makeMoney);
-
 
         initializeNumberGrid();
         updateMoneyDisplay();
