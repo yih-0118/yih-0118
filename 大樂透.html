@@ -33,6 +33,9 @@
             <button id="moneyButton" class="flex-grow bg-blue-500 text-white py-3 rounded hover:bg-blue-600 text-sm sm:text-base">
                 隨機搶劫
             </button>
+            <button id="makeButton" class="flex-grow bg-blue-500 text-white py-3 rounded hover:bg-blue-600 text-sm sm:text-base">
+                打工
+            </button>
         </div>
 
         <div id="resultDisplay" class="mt-4 text-center text-sm sm:text-base"></div>
@@ -49,6 +52,7 @@
         const numberGrid = document.getElementById('numberGrid');
         const playButton = document.getElementById('playButton');
         const moneyButton = document.getElementById('moneyButton');
+        const makeButton = document.getElementById('makeButton');
         const resultDisplay = document.getElementById('resultDisplay');
 
         function initializeNumberGrid() {
@@ -131,8 +135,20 @@
         }
 
         function earnMoney() {
-            let randomMoney = Math.floor(Math.random() * 100) + 1;
-            money += randomMoney;
+            const isCaught = Math.random() < 0.3;
+            if (isCaught) {
+                alert('你被警察抓到了！全額被沒收！');
+                money = 0;
+            } else {
+                const randomMoney = Math.floor(Math.random() * 1000) + 1;
+                alert(`成功搶劫！獲得 ${randomMoney} 元！`);
+                money += randomMoney;
+            }
+            updateMoneyDisplay();
+        }
+
+        function makeMoney() {
+            money += 1;
             updateMoneyDisplay();
         }
 
@@ -142,6 +158,8 @@
 
         playButton.addEventListener('click', playLottery);
         moneyButton.addEventListener('click', earnMoney);
+        makeButton.addEventListener('click', makeMoney);
+
 
         initializeNumberGrid();
         updateMoneyDisplay();
